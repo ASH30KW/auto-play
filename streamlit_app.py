@@ -1,7 +1,7 @@
 import streamlit as st
 import fitz  # PyMuPDF
 from PIL import Image
-import io
+import time
 
 # Set the title of the Streamlit app
 st.title("Autoplay PDF Slideshow")
@@ -27,21 +27,24 @@ if uploaded_file is not None:
         # Set a delay in seconds between images (adjust as needed)
         delay = 2  # Delay in seconds
 
-        # Autorefresh after the specified delay (delay is multiplied by 1000 to convert to milliseconds)
-        st.experimental_rerun(interval=delay * 1000)
-
-        # Simulate autoplay by using Streamlit's session state to keep track of the current slide
+        # Initialize session state for the current slide index if not set
         if 'current_slide' not in st.session_state:
             st.session_state.current_slide = 0
 
         # Display the current slide
         st.image(slides[st.session_state.current_slide], use_column_width=True)
 
-        # Update the slide index and loop back to the start if necessary
+        # Create a button to manually go to the next slide if desired
+        if st.button("Next Slide"):
+            st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
+        
+        # Auto-advance the slide after the delay
+        time.sleep(delay)
         st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
-
+        
+        # Trigger rerun using st.experimental_set_query_params to update URL and force rerun
+        st.experimental_set_query_params(current_slide=st.session_state.current_slide)
     else:
         st.error("No valid pages found in the uploaded PDF.")
 else:
     st.info("Please upload a PDF file to start the slideshow.")
-
