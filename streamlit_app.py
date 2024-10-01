@@ -24,26 +24,30 @@ if uploaded_file is not None:
 
     # Ensure the PDF has slides
     if slides:
-        # Set a delay in seconds between images (adjust as needed)
+        # Set a delay in seconds between slides (adjust as needed)
         delay = 2  # Delay in seconds
 
-        # Initialize session state for the current slide index if not set
+        # Initialize session state for the current slide index and timing if not set
         if 'current_slide' not in st.session_state:
             st.session_state.current_slide = 0
+            st.session_state.slide_start_time = time.time()
 
         # Display the current slide
         st.image(slides[st.session_state.current_slide], use_column_width=True)
 
-        # Create a button to manually go to the next slide if desired
+        # Calculate time passed since the last slide change
+        elapsed_time = time.time() - st.session_state.slide_start_time
+
+        # Auto-advance the slide if the delay has passed
+        if elapsed_time > delay:
+            st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
+            st.session_state.slide_start_time = time.time()
+
+        # Provide a button for manual control (optional)
         if st.button("Next Slide"):
             st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
-        
-        # Auto-advance the slide after the delay
-        time.sleep(delay)
-        st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
-        
-        # Trigger rerun using st.experimental_set_query_params to update URL and force rerun
-        st.experimental_set_query_params(current_slide=st.session_state.current_slide)
+            st.session_state.slide_start_time = time.time()
+
     else:
         st.error("No valid pages found in the uploaded PDF.")
 else:
