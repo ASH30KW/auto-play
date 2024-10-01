@@ -31,17 +31,17 @@ if uploaded_file is not None:
         # Simulate autoplay by using Streamlit's session state to keep track of the current slide
         if 'current_slide' not in st.session_state:
             st.session_state.current_slide = 0
+            st.session_state.start_time = time.time()
+
+        # Check if enough time has passed to switch slides
+        if time.time() - st.session_state.start_time > delay:
+            st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
+            st.session_state.start_time = time.time()  # Reset the start time for the next slide
 
         # Display the current slide
         st.image(slides[st.session_state.current_slide], use_column_width=True)
 
-        # Move to the next slide after a delay
-        time.sleep(delay)
-
-        # Update the slide index and loop back to the start if necessary
-        st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
-
-        # Rerun the app to create the autoplay effect
+        # Rerun the app after a short period to continue the slideshow
         st.experimental_rerun()
     else:
         st.error("No valid pages found in the uploaded PDF.")
