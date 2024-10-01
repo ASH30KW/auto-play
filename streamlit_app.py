@@ -27,6 +27,9 @@ if uploaded_file is not None:
         # Set a delay in seconds between images (adjust as needed)
         delay = 2
 
+        # Autorefresh after the specified delay
+        st_autorefresh = st.experimental_autorefresh(interval=delay * 1000, key="autorefresh")
+
         # Simulate autoplay by using Streamlit's session state to keep track of the current slide
         if 'current_slide' not in st.session_state:
             st.session_state.current_slide = 0
@@ -34,12 +37,9 @@ if uploaded_file is not None:
         # Display the current slide
         st.image(slides[st.session_state.current_slide], use_column_width=True)
 
-        # Automatically refresh every `delay` seconds to create the autoplay effect
-        st_autorefresh = st.experimental_rerun()
-
         # Update the slide index and loop back to the start if necessary
         st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
-        
+
     else:
         st.error("No valid pages found in the uploaded PDF.")
 else:
