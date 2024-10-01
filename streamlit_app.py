@@ -25,10 +25,10 @@ if uploaded_file is not None:
     # Ensure the PDF has slides
     if slides:
         # Set a delay in seconds between images (adjust as needed)
-        delay = 2
+        delay = 2  # Delay in seconds
 
-        # Autorefresh after the specified delay
-        st_autorefresh = st.experimental_autorefresh(interval=delay * 1000, key="autorefresh")
+        # Autorefresh after the specified delay (delay is multiplied by 1000 to convert to milliseconds)
+        st.experimental_rerun(interval=delay * 1000)
 
         # Simulate autoplay by using Streamlit's session state to keep track of the current slide
         if 'current_slide' not in st.session_state:
@@ -44,3 +44,4 @@ if uploaded_file is not None:
         st.error("No valid pages found in the uploaded PDF.")
 else:
     st.info("Please upload a PDF file to start the slideshow.")
+
