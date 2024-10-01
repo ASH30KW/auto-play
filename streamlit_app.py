@@ -1,7 +1,6 @@
 import streamlit as st
 import fitz  # PyMuPDF
 from PIL import Image
-import time
 import io
 
 # Set the title of the Streamlit app
@@ -31,18 +30,16 @@ if uploaded_file is not None:
         # Simulate autoplay by using Streamlit's session state to keep track of the current slide
         if 'current_slide' not in st.session_state:
             st.session_state.current_slide = 0
-            st.session_state.start_time = time.time()
-
-        # Check if enough time has passed to switch slides
-        if time.time() - st.session_state.start_time > delay:
-            st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
-            st.session_state.start_time = time.time()  # Reset the start time for the next slide
 
         # Display the current slide
         st.image(slides[st.session_state.current_slide], use_column_width=True)
 
-        # Rerun the app after a short period to continue the slideshow
-        st.experimental_rerun()
+        # Automatically refresh every `delay` seconds to create the autoplay effect
+        st_autorefresh = st.experimental_rerun()
+
+        # Update the slide index and loop back to the start if necessary
+        st.session_state.current_slide = (st.session_state.current_slide + 1) % len(slides)
+        
     else:
         st.error("No valid pages found in the uploaded PDF.")
 else:
